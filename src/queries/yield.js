@@ -73,7 +73,7 @@ const getYieldFiltered = async (lendingProjects = []) => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   return response;
@@ -123,7 +123,7 @@ const getLatestYieldForPool = async (configID) => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   return response;
@@ -170,7 +170,7 @@ const getYieldProject = async (project) => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} project data`, 404);
+    throw new AppError(`Couldn't get ${tableName} project data`, 404);
   }
 
   return response;
@@ -234,7 +234,7 @@ const getYieldOffset = async (project, offset) => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} offset data`, 404);
+    throw new AppError(`Couldn't get ${tableName} offset data`, 404);
   }
 
   return response;
@@ -288,7 +288,7 @@ const getYieldLendBorrow = async () => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   return response;
@@ -316,7 +316,7 @@ const getYieldAvg30d = async () => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} 30day avg data`, 404);
+    throw new AppError(`Couldn't get ${tableName} 30day avg data`, 404);
   }
 
   // reformat

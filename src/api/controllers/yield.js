@@ -39,7 +39,7 @@ const getYieldHistory = async (req, res) => {
   const response = await conn.query(query, { configIDValue: configID });
 
   if (!response) {
-    return new AppError(`Couldn't get data`, 404);
+    throw new AppError(`Couldn't get data`, 404);
   }
 
   res.status(200).json({
@@ -83,7 +83,7 @@ const getYieldLendBorrowHistory = async (req, res) => {
   const response = await conn.query(query, { configIDValue: configID });
 
   if (!response) {
-    return new AppError(`Couldn't get data`, 404);
+    throw new AppError(`Couldn't get data`, 404);
   }
 
   res.status(200).json({
@@ -123,7 +123,7 @@ const getVolumeHistory = async (req, res) => {
   const response = await conn.query(query, { configIDValue: configID });
 
   if (!response) {
-    return new AppError(`Couldn't get data`, 404);
+    throw new AppError(`Couldn't get data`, 404);
   }
 
   res.status(200).json({

@@ -1,9 +1,13 @@
 const express = require('express');
-const router = express.Router();
+const asyncHandler = require('../../utils/asyncHandler');
 const yieldControllers = require('../controllers/yield');
 
-router.route('/chart/:pool').get(yieldControllers.getYieldHistory);
-router.route('/chartLendBorrow/:pool').get(yieldControllers.getYieldLendBorrowHistory);
-router.route('/volume/:pool').get(yieldControllers.getVolumeHistory);
+const router = express.Router();
+
+router.route('/chart/:pool').get(asyncHandler(yieldControllers.getYieldHistory));
+router
+  .route('/chartLendBorrow/:pool')
+  .get(asyncHandler(yieldControllers.getYieldLendBorrowHistory));
+router.route('/volume/:pool').get(asyncHandler(yieldControllers.getVolumeHistory));
 
 module.exports = router;

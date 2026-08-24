@@ -26,7 +26,7 @@ const insertPerp = async (payload) => {
   const response = await conn.result(query);
 
   if (!response) {
-    return new AppError(`Couldn't insert ${tableName} data`, 404);
+    throw new AppError(`Couldn't insert ${tableName} data`, 404);
   }
 
   return response;

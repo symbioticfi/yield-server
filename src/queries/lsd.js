@@ -1,6 +1,7 @@
 const minify = require('pg-minify');
 
 const { pgp, connect } = require('../utils/dbConnection');
+const AppError = require('../utils/appError');
 
 const insertLsd = async (payload) => {
   const conn = await connect();
@@ -21,7 +22,7 @@ const insertLsd = async (payload) => {
   const response = await conn.result(query);
 
   if (!response) {
-    return new AppError(`Couldn't insert/update data`, 404);
+    throw new AppError(`Couldn't insert/update data`, 404);
   }
 
   return response;

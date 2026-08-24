@@ -43,7 +43,7 @@ ORDER BY
   });
 
   if (!response) {
-    return new AppError(`Couldn't get data`, 404);
+    throw new AppError(`Couldn't get data`, 404);
   }
 
   return response;

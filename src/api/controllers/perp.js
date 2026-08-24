@@ -103,7 +103,7 @@ const getPerp = async (req, res) => {
   });
 
   if (!response) {
-    return new AppError(`Couldn't get data`, 404);
+    throw new AppError(`Couldn't get data`, 404);
   }
 
   res.status(200).json({

@@ -48,7 +48,7 @@ async function getPoolsData(poolConfig, chain) {
       chain,
     });
 
-    let underlying = market;
+    let underlying;
     try {
       const { output } = await sdk.api.abi.call({
         target: market,
@@ -56,7 +56,14 @@ async function getPoolsData(poolConfig, chain) {
         chain,
       });
       underlying = output;
-    } catch {}
+    } catch (error) {
+      console.warn('Skipping Enclabs market because underlying token resolution failed', {
+        chain,
+        market,
+        error,
+      });
+      continue;
+    }
 
     let underlyingSymbol = cTokenSymbol;
     try {
@@ -66,9 +73,15 @@ async function getPoolsData(poolConfig, chain) {
         chain,
       });
       underlyingSymbol = symbol;
-    } catch {}
+    } catch (error) {
+      console.warn('Using cToken symbol because underlying token symbol resolution failed', {
+        chain,
+        market,
+        error,
+      });
+    }
 
-    let decimals = 18;
+    let decimals;
     try {
       const { output: d } = await sdk.api.abi.call({
         target: underlying,
@@ -76,7 +89,17 @@ async function getPoolsData(poolConfig, chain) {
         chain,
       });
       decimals = Number(d);
-    } catch {}
+      if (!Number.isInteger(decimals) || decimals < 0 || decimals > 255) {
+        throw new Error(`Invalid token decimals: ${d}`);
+      }
+    } catch (error) {
+      console.warn('Skipping Enclabs market because token decimals are unavailable', {
+        chain,
+        market,
+        error,
+      });
+      continue;
+    }
 
     const [
       { output: totalSupplyRaw },
@@ -111,10 +134,19 @@ async function getPoolsData(poolConfig, chain) {
     const apyBase = (Math.pow(1 + supplyRatePerBlock, BLOCKS_PER_YEAR) - 1) * 100;
     const apyBaseBorrow = borrowRatePerBlock * BLOCKS_PER_YEAR * 100;
 
-    let ltv = 0;
+    let ltv;
     try {
-      ltv = Number(marketData[1]) / 1e18;
-    } catch {}
+      const ltvValue = Number(marketData?.[1]) / 1e18;
+      if (Number.isFinite(ltvValue)) {
+        ltv = ltvValue;
+      }
+    } catch (error) {
+      console.warn('Omitting Enclabs LTV because market data could not be parsed', {
+        chain,
+        market,
+        error,
+      });
+    }
 
     pools.push({
       pool: `${market}-${chain}`.toLowerCase(),
@@ -126,7 +158,7 @@ async function getPoolsData(poolConfig, chain) {
       apyBaseBorrow: Number(apyBaseBorrow),
       totalSupplyUsd: round(totalSupplyUsd),
       totalBorrowUsd: round(totalBorrowUsd),
-      ltv: round(ltv),
+      ...(ltv === undefined ? {} : { ltv: round(ltv) }),
       underlyingTokens: [underlying],
       poolMeta: poolConfig.name,
     });

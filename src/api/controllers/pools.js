@@ -8,7 +8,7 @@ const getPools = async (req, res) => {
   const response = await axios.get(`${DATASETS_BASE}/yield-api/pools`);
 
   if (!response.data) {
-    return new AppError("Couldn't retrieve data", 404);
+    throw new AppError("Couldn't retrieve data", 404);
   }
 
   res.status(200).json(response.data);
@@ -18,7 +18,7 @@ const getLendBorrow = async (req, res) => {
   const response = await axios.get(`${DATASETS_BASE}/yield-api/lendBorrow`);
 
   if (!response.data) {
-    return new AppError("Couldn't retrieve data", 404);
+    throw new AppError("Couldn't retrieve data", 404);
   }
 
   res.status(200).json(response.data);
