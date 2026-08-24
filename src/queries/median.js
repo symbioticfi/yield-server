@@ -1,6 +1,7 @@
 const minify = require('pg-minify');
 
 const { pgp, connect } = require('../utils/dbConnection');
+const AppError = require('../utils/appError');
 
 const tableName = 'median';
 
@@ -14,7 +15,7 @@ const insertMedian = async (payload) => {
   const response = await conn.result(query);
 
   if (!response) {
-    return new AppError(`Couldn't insert ${tableName} data`, 404);
+    throw new AppError(`Couldn't insert ${tableName} data`, 404);
   }
 
   return response;

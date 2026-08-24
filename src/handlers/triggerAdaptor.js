@@ -18,9 +18,10 @@ const ZERO_TVL_CATEGORIES = ['Lending', 'Uncollateralized Lending'];
 
 module.exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  console.log(event);
+  const records = Array.isArray(event?.Records) ? event.Records : [];
+  const batchItemFailures = [];
 
-  for (const record of event.Records) {
+  for (const record of records) {
     const startedAt = new Date();
     let body;
     try {
@@ -33,18 +34,26 @@ module.exports.handler = async (event, context) => {
         durationMs: finishedAt - startedAt,
         status: 'success',
       });
-    } catch (err) {
+    } catch (error) {
       const finishedAt = new Date();
-      console.log(err);
+      console.error('Adapter record processing failed', {
+        messageId: record.messageId,
+        error,
+      });
       await recordAdapterStats({
         adapter: body?.adaptor,
         finishedAt,
         durationMs: finishedAt - startedAt,
         status: 'error',
-        error: formatErrorForStorage(err),
+        error: formatErrorForStorage(error),
       });
+      if (record.messageId) {
+        batchItemFailures.push({ itemIdentifier: record.messageId });
+      }
     }
   }
+
+  return { batchItemFailures };
 };
 
 const recordAdapterStats = async ({
@@ -65,8 +74,7 @@ const recordAdapterStats = async ({
       last_error: error,
     });
   } catch (runtimeErr) {
-    console.log('failed to update adapter stats');
-    console.log(runtimeErr);
+    console.error('Failed to update adapter stats', { error: runtimeErr, adapter });
   }
 };
 

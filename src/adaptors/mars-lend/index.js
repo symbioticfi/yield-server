@@ -213,13 +213,18 @@ async function apy() {
   }
 }
 
+const MARS_API_KEY = process.env.MARS_API_KEY;
+
 async function queryContract(api, contract, data) {
   if (typeof data !== 'string') {
     data = JSON.stringify(data);
   }
   const encodedData = Buffer.from(data).toString('base64');
-  const endpoint = `${api}/cosmwasm/wasm/v1/contract/${contract}/smart/${encodedData}?x-apikey=7e3642de`;
-  const result = await await utils.getData(endpoint);
+  const apiKeyQuery = MARS_API_KEY
+    ? `?x-apikey=${encodeURIComponent(MARS_API_KEY)}`
+    : '';
+  const endpoint = `${api}/cosmwasm/wasm/v1/contract/${contract}/smart/${encodedData}${apiKeyQuery}`;
+  const result = await utils.getData(endpoint);
   return result.data;
 }
 

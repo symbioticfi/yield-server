@@ -1,4 +1,5 @@
 const { pgp, connect } = require('../utils/dbConnection');
+const AppError = require('../utils/appError');
 
 const tableName = 'stat';
 
@@ -21,7 +22,7 @@ const getStat = async () => {
   const response = await conn.query(query, { table: tableName });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   // reformat
@@ -57,7 +58,7 @@ const insertStat = async (payload) => {
   const response = await conn.result(query);
 
   if (!response) {
-    return new AppError(`Couldn't insert/update ${tableName} data`, 404);
+    throw new AppError(`Couldn't insert/update ${tableName} data`, 404);
   }
 
   return response;

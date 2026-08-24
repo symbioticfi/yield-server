@@ -89,7 +89,7 @@ const getPoolsBorrow = async (req, res) => {
   );
 
   if (!data) {
-    return new AppError("Couldn't retrieve data", 404);
+    throw new AppError("Couldn't retrieve data", 404);
   }
 
   // pools == supply side apy values

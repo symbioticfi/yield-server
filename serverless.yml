@@ -25,9 +25,32 @@ provider:
         - Effect: Allow
           Action:
             - s3:ListBucket
-            - s3:*Object*
+          Resource:
+            - Fn::GetAtt:
+                - BucketData
+                - Arn
+            - arn:aws:s3:::llama-apy-prod-data
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:AbortMultipartUpload
+          Resource:
+            - Fn::Join:
+                - ''
+                - - Fn::GetAtt:
+                      - BucketData
+                      - Arn
+                  - /*
+            - arn:aws:s3:::llama-apy-prod-data/*
+        - Effect: Allow
+          Action:
             - sqs:SendMessage
-          Resource: '*'
+          Resource:
+            - Fn::GetAtt:
+                - AdapterQueue
+                - Arn
 
   environment:
     BUCKET_DATA: { Ref: BucketData }
@@ -63,6 +86,8 @@ functions:
               - AdapterQueue
               - Arn
           batchSize: 4
+          functionResponseType: ReportBatchItemFailures
+
     environment:
       ETHEREUM_RPC: ${file(./env.js):ETHEREUM_RPC}
       XDAI_RPC: ${file(./env.js):XDAI_RPC}
@@ -76,6 +101,8 @@ functions:
       TVL_SPIKE_WEBHOOK: ${file(./env.js):TVL_SPIKE_WEBHOOK}
       NEW_YIELDS_WEBHOOK: ${file(./env.js):NEW_YIELDS_WEBHOOK}
       SMARDEX_SUBGRAPH_API_KEY: ${file(./env.js):SMARDEX_SUBGRAPH_API_KEY}
+      MARS_API_KEY: ${file(./env.js):MARS_API_KEY}
+
       VENDOR_FINANCE: ${file(./env.js):VENDOR_FINANCE}
       TRADERJOE: ${file(./env.js):TRADERJOE}
       OSMOSIS_API_KEY: ${file(./env.js):OSMOSIS_API_KEY}

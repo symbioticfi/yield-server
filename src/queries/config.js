@@ -1,4 +1,5 @@
 const { pgp, connect } = require('../utils/dbConnection');
+const AppError = require('../utils/appError');
 
 const tableName = 'config';
 
@@ -10,7 +11,7 @@ const getDistinctProjects = async () => {
   const response = await conn.query(query, { table: tableName });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   return response.map((i) => i.project);
@@ -33,7 +34,7 @@ const getConfigProject = async (project) => {
   const response = await conn.query(query, { table: tableName, project });
 
   if (!response) {
-    return new AppError(`Couldn't get ${tableName} data`, 404);
+    throw new AppError(`Couldn't get ${tableName} data`, 404);
   }
 
   return response;
